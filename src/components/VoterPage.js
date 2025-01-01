@@ -186,6 +186,7 @@ const VoterPage = () => {
                   Party: {candidate.partyName}
                 </span>
                 <span style={styles.ageInfo}>Age: {candidate.age}</span>
+                <span style={styles.ageInfo}>Votes: {candidate.votes}</span>
               </div>
               <button
                 style={styles.button}
