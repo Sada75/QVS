@@ -1,275 +1,204 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import fetchGitHubData from "../utils/githubAPI"; // Updated to fetch GitHub data including avatar_url
-import ProjectRegistryABI from "../abi/ProjectRegistry.json"; // Replace with the correct path to your ABI file
+import CandidateRegistryABI from "../abi/ProjectRegistry.json";
 
 const VoterPage = () => {
-  const [projects, setProjects] = useState([]); // Store project list
-  const [projectDetails, setProjectDetails] = useState({}); // Store additional details like avatar_url and README
-  const [userCredits, setUserCredits] = useState(100); // Track remaining credits for the user
-  const [userVotes, setUserVotes] = useState({}); // Track votes per user per project
+  const [candidates, setCandidates] = useState([]);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [contract, setContract] = useState(null);
-  const [voteInputs, setVoteInputs] = useState({}); // Store vote input for each project
 
-  // Inline styles for the page
   const styles = {
     container: {
       maxWidth: "800px",
-      margin: "0 auto",
-      padding: "20px",
-      fontFamily: "Arial, sans-serif",
-      backgroundColor: "#f7f9fc",
-      borderRadius: "10px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      margin: "2rem auto",
+      padding: "2.5rem",
+      fontFamily: "'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
+      background: "linear-gradient(145deg, #ff9a9e 0%, #fad0c4 100%)",
+      borderRadius: "20px",
+      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.06)",
+      minHeight: "80vh",
+      border: "1px solid rgba(255, 255, 255, 0.18)",
     },
     header: {
       textAlign: "center",
-      marginBottom: "20px",
-      color: "#333",
+      color: "#1e3a8a",
+      fontSize: "2.5rem",
+      fontWeight: "700",
+      marginBottom: "2.5rem",
+      borderBottom: "2px solid rgba(147, 197, 253, 0.3)",
+      paddingBottom: "1.25rem",
+      textShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+      letterSpacing: "-0.02em",
     },
-    projectCard: {
-      backgroundColor: "#fff",
-      border: "1px solid #e0e0e0",
-      borderRadius: "8px",
-      padding: "15px",
-      marginBottom: "20px",
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    candidatesList: {
+      display: "grid",
+      gap: "1.5rem",
+      gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+      padding: "0.5rem",
     },
-    projectTitle: {
-      fontSize: "18px",
-      fontWeight: "bold",
-      color: "#007bff",
+    candidateCard: {
+      padding: "1.75rem",
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      border: "1px solid rgba(147, 197, 253, 0.2)",
+      borderRadius: "16px",
+      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      cursor: "pointer",
+      display: "flex",
+      flexDirection: "column",
+      gap: "1.25rem",
+      position: "relative",
+      overflow: "hidden",
+      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.03)",
+      backdropFilter: "blur(10px)",
+      "&:hover": {
+        transform: "translateY(-4px)",
+        boxShadow: "0 12px 28px rgba(0, 0, 0, 0.08)",
+      },
     },
-    projectInfo: {
-      margin: "10px 0",
-      fontSize: "14px",
-      color: "#555",
+    candidateInfo: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.75rem",
+      padding: "0.5rem 0",
     },
-    avatar: {
-      width: "50px",
-      height: "50px",
-      borderRadius: "50%",
-      marginRight: "10px",
+    candidateName: {
+      fontSize: "1.4rem",
+      fontWeight: "600",
+      color: "#1e3a8a",
+      marginBottom: "0.5rem",
+      letterSpacing: "-0.02em",
+      lineHeight: "1.3",
     },
-    link: {
-      color: "#007bff",
-      textDecoration: "none",
+    candidateParty: {
+      fontSize: "1.1rem",
+      color: "#3b82f6",
+      fontWeight: "500",
+      background: "rgba(59, 130, 246, 0.08)",
+      padding: "0.4rem 0.8rem",
+      borderRadius: "6px",
+      display: "inline-block",
     },
-    input: {
-      width: "80px",
-      padding: "5px",
-      borderRadius: "4px",
-      border: "1px solid #ccc",
-      marginRight: "10px",
+    ageInfo: {
+      fontSize: "1rem",
+      color: "#64748b",
+      background: "rgba(100, 116, 139, 0.08)",
+      padding: "0.4rem 0.8rem",
+      borderRadius: "6px",
+      display: "inline-block",
+      width: "fit-content",
     },
     button: {
-      padding: "8px 16px",
-      borderRadius: "4px",
-      backgroundColor: "#28a745",
-      color: "#fff",
+      padding: "1rem 1.75rem",
+      fontSize: "1.1rem",
+      fontWeight: "600",
+      borderRadius: "12px",
       border: "none",
-      cursor: "pointer",
-      fontWeight: "bold",
+      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      width: "100%",
+      cursor: hasVoted ? "not-allowed" : "pointer",
+      background: hasVoted 
+        ? "#e2e8f0"
+        : "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+      color: hasVoted ? "#94a3b8" : "#ffffff",
+      boxShadow: hasVoted 
+        ? "none" 
+        : "0 4px 12px rgba(37, 99, 235, 0.2)",
+      opacity: hasVoted ? 0.7 : 1,
+      "&:hover": {
+        transform: hasVoted ? "none" : "translateY(-2px)",
+        boxShadow: hasVoted 
+          ? "none" 
+          : "0 6px 20px rgba(37, 99, 235, 0.25)",
+      },
+      "&:active": {
+        transform: "translateY(1px)",
+      },
     },
-    disabledButton: {
-      backgroundColor: "#ccc",
-      cursor: "not-allowed",
-    },
-    credits: {
-      marginTop: "10px",
-      fontWeight: "bold",
-      color: "#ff5733",
-    },
-    readme: {
-      marginTop: "10px",
-      padding: "10px",
-      backgroundColor: "#f1f1f1",
-      borderRadius: "5px",
-      overflowX: "auto",
-      fontFamily: "monospace",
+    loadingContainer: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "50vh",
+      fontSize: "1.25rem",
+      color: "#3b82f6",
+      flexDirection: "column",
+      gap: "1rem",
+      textShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
     },
   };
 
-  // Initialize the contract instance
+  // Initialize contract and fetch candidates
   useEffect(() => {
     const initializeContract = async () => {
-      if (window.ethereum) {
+      try {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
-        const contractAddress = "0xceDE3455718E1ac3152dFf01f92c5384B3d1f391"; // Replace with your contract address
         const contractInstance = new ethers.Contract(
-          contractAddress,
-          ProjectRegistryABI,
+          "0xB0B096b2CE27219AF7079F8f9F5C1442Dc2Eea93",
+          CandidateRegistryABI,
           signer
         );
         setContract(contractInstance);
-      } else {
-        alert("Please install MetaMask!");
+
+        const candidatesList = await contractInstance.getAllCandidates();
+        setCandidates(candidatesList);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading contract:", error);
+        setLoading(false);
       }
     };
 
     initializeContract();
   }, []);
 
-  // Fetch all projects on load
-  useEffect(() => {
-    if (!contract) return;
-
-    const fetchData = async () => {
-      try {
-        // Fetch all projects
-        const allProjects = await contract.getAllProjects();
-        const projectList = allProjects.map((project) => ({
-          name: project.projectName,
-          github: project.githubLink,
-          youtube: project.youtubeLink,
-          credits: project.credits.toString(),
-          owner: project.owner, // Get the owner address from the struct
-        }));
-        setProjects(projectList);
-
-        // Fetch README content and avatar for each project
-        const projectDetailsPromises = projectList.map((project) =>
-          fetchGitHubData(project.github)
-        );
-
-        const detailsArray = await Promise.all(projectDetailsPromises);
-        const detailsMap = projectList.reduce((acc, project, index) => {
-          acc[project.name] = detailsArray[index];
-          return acc;
-        }, {});
-        setProjectDetails(detailsMap);
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [contract]);
-
-  // Handle voting for a project
-  const voteForProject = async (projectIndex) => {
-    const project = projects[projectIndex];
-    const votes = userVotes[project.name] || 0;
-    const newVotes = votes + 1;
-    const quadraticCredits = Math.pow(newVotes, 2);
-
-    // Check if the user has enough credits left
-    if (quadraticCredits > userCredits) {
-      alert("You don't have enough credits to vote!");
-      return;
-    }
-
-    // Update local state for user votes and credits
-    setUserVotes({
-      ...userVotes,
-      [project.name]: newVotes,
-    });
-    setUserCredits(userCredits - quadraticCredits);
-
-    const totalCredits = parseInt(project.credits) + quadraticCredits;
+  const voteForCandidate = async (candidateIndex) => {
+    if (hasVoted) return;
 
     try {
-      // Call the updateCredits function with the project owner's address
-      const tx = await contract.updateCredits(project.owner, totalCredits);
+      const tx = await contract.voteForCandidate(candidateIndex);
       await tx.wait();
-      alert("Credits updated successfully!");
-    } catch (err) {
-      console.error("Error updating credits:", err);
-      alert("Transaction failed: " + err.message);
+      setSelectedCandidate(candidateIndex);
+      setHasVoted(true);
+    } catch (error) {
+      console.error("Error voting:", error);
     }
   };
-
-  // Handle vote input change
-  const handleVoteInputChange = (index, value) => {
-    setVoteInputs({
-      ...voteInputs,
-      [index]: value,
-    });
-  };
-
-  if (loading) return <div style={styles.header}>Loading projects...</div>;
-
-  if (projects.length === 0)
-    return <div style={styles.header}>No projects available!</div>;
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Project Registry</h1>
-      <p style={styles.credits}>Remaining Credits: {userCredits}</p>
-
-      {/* Render projects dynamically */}
-      {projects.map((project, index) => (
-        <div key={index} style={styles.projectCard}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {projectDetails[project.name]?.avatarUrl && (
-              <img
-                src={projectDetails[project.name].avatarUrl}
-                alt={`${project.name} avatar`}
-                style={styles.avatar}
-              />
-            )}
-            <h2 style={styles.projectTitle}>{project.name}</h2>
-          </div>
-          <p style={styles.projectInfo}>
-            GitHub:{" "}
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={styles.link}
-            >
-              {project.github}
-            </a>
-          </p>
-          <p style={styles.projectInfo}>
-            YouTube:{" "}
-            <a
-              href={project.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={styles.link}
-            >
-              {project.youtube}
-            </a>
-          </p>
-          <p style={styles.projectInfo}>Credits: {project.credits}</p>
-
-          {/* Display the README content */}
-          <div style={styles.readme}>
-            <h3>README Content:</h3>
-            <pre>{projectDetails[project.name]?.readmeContent || "README not available."}</pre>
-          </div>
-
-          {/* Input for number of votes for each project */}
-          <input
-            type="number"
-            value={voteInputs[index] || 0}
-            onChange={(e) => handleVoteInputChange(index, Number(e.target.value))}
-            style={styles.input}
-            min="1"
-            max={userCredits}
-            placeholder="Votes"
-          />
-          <button
-            onClick={() => voteForProject(index)}
-            style={
-              userCredits <= 0 || voteInputs[index] <= 0
-                ? { ...styles.button, ...styles.disabledButton }
-                : styles.button
-            }
-            disabled={userCredits <= 0 || voteInputs[index] <= 0}
-          >
-            Vote
-          </button>
+      <h1 style={styles.header}>Decentralized Voting System</h1>
+      {loading ? (
+        <div style={styles.loadingContainer}>
+          <span>Loading candidates...</span>
         </div>
-      ))}
-
-      {userCredits <= 0 && (
-        <p style={styles.credits}>You have used all your credits.</p>
+      ) : (
+        <div style={styles.candidatesList}>
+          {candidates.map((candidate, index) => (
+            <div key={index} style={styles.candidateCard}>
+              <div style={styles.candidateInfo}>
+                <span style={styles.candidateName}>
+                  {candidate.candidateName}
+                </span>
+                <span style={styles.candidateParty}>
+                  Party: {candidate.partyName}
+                </span>
+                <span style={styles.ageInfo}>Age: {candidate.age}</span>
+              </div>
+              <button
+                style={styles.button}
+                disabled={hasVoted}
+                onClick={() => voteForCandidate(index)}
+              >
+                {hasVoted && selectedCandidate === index
+                  ? "Vote Recorded"
+                  : "Cast Vote"}
+              </button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

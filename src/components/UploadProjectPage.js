@@ -1,45 +1,99 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ethers } from 'ethers'; // Import ethers.js
-import '../styles/UploadProjectPage.css';
-import contractABI from "../abi/ProjectRegistry.json"; // Import the ABI of your contract
+import { ethers } from 'ethers';
+import contractABI from "../abi/ProjectRegistry.json";
 
 const UploadProjectPage = () => {
-  const [projectName, setProjectName] = useState('');
-  const [githubLink, setGithubLink] = useState('');
-  const [projectExplanation, setProjectExplanation] = useState('');
-  const [youtubeLink, setYoutubeLink] = useState('');
-
+  const [candidateName, setCandidateName] = useState('');
+  const [partyName, setPartyName] = useState('');
+  const [age, setAge] = useState('');
   const navigate = useNavigate();
+  const contractAddress = "0xB0B096b2CE27219AF7079F8f9F5C1442Dc2Eea93";
 
-  // Set up your contract ABI and address (after deploying the contract)
-  const contractAddress = "0xceDE3455718E1ac3152dFf01f92c5384B3d1f391"; // Replace with your deployed contract address
-  
+  const styles = {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      minHeight: '100vh',
+      padding: '2rem',
+      backgroundColor: '#f5f7fa',
+    },
+    formCard: {
+      backgroundColor: 'white',
+      padding: '2rem',
+      borderRadius: '12px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      width: '100%',
+      maxWidth: '500px',
+      margin: '2rem auto',
+    },
+    title: {
+      textAlign: 'center',
+      color: '#1a365d',
+      fontSize: '2rem',
+      fontWeight: 'bold',
+      marginBottom: '2rem',
+    },
+    formGroup: {
+      marginBottom: '1.5rem',
+      width: '100%',
+    },
+    label: {
+      display: 'block',
+      marginBottom: '0.5rem',
+      color: '#4a5568',
+      fontSize: '0.9rem',
+      fontWeight: '500',
+    },
+    input: {
+      width: '100%',
+      padding: '0.75rem',
+      borderRadius: '6px',
+      border: '1px solid #e2e8f0',
+      fontSize: '1rem',
+      transition: 'border-color 0.2s ease',
+      outline: 'none',
+      '&:focus': {
+        borderColor: '#4299e1',
+      },
+    },
+    button: {
+      width: '100%',
+      padding: '0.75rem',
+      backgroundColor: '#4299e1',
+      color: 'white',
+      border: 'none',
+      borderRadius: '6px',
+      fontSize: '1rem',
+      fontWeight: '500',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s ease',
+      marginTop: '1rem',
+      '&:hover': {
+        backgroundColor: '#3182ce',
+      },
+      '&:active': {
+        backgroundColor: '#2b6cb0',
+      },
+    },
+  };
 
-  // Function to handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Connect to MetaMask
     if (window.ethereum) {
-      const provider = new ethers.BrowserProvider(window.ethereum); // Connect to the browser's Ethereum provider
-      const signer = await provider.getSigner(); // Get the signer (user's wallet)
-      const contract = new ethers.Contract(contractAddress, contractABI, signer); // Connect to the contract
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
       try {
-        // Call the registerProject function on the smart contract with the input values
-        const tx = await contract.registerProject(projectName, githubLink, youtubeLink);
-
-        // Wait for transaction to be mined
+        const tx = await contract.registerCandidate(candidateName, partyName, parseInt(age));
         await tx.wait();
-
-        alert('Project registered successfully!');
-
-        // Navigate back to the homepage
+        alert('Candidate registered successfully!');
         navigate('/');
       } catch (error) {
-        console.error('Error registering project:', error);
-        alert('Error registering project.');
+        console.error('Error registering candidate:', error);
+        alert('Error registering candidate.');
       }
     } else {
       alert('Please install MetaMask!');
@@ -47,55 +101,58 @@ const UploadProjectPage = () => {
   };
 
   return (
-    <div className="upload-project-page">
-      <h2>Upload Your Project</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="projectName">Project Name:</label>
-          <input
-            type="text"
-            id="projectName"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            required
-          />
-        </div>
+    <div style={styles.container}>
+      <div style={styles.formCard}>
+        <h2 style={styles.title}>Register as a Candidate</h2>
+        <form onSubmit={handleSubmit}>
+          <div style={styles.formGroup}>
+            <label htmlFor="candidateName" style={styles.label}>
+              Candidate Name:
+            </label>
+            <input
+              type="text"
+              id="candidateName"
+              value={candidateName}
+              onChange={(e) => setCandidateName(e.target.value)}
+              required
+              style={styles.input}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="githubLink">GitHub Link:</label>
-          <input
-            type="url"
-            id="githubLink"
-            value={githubLink}
-            onChange={(e) => setGithubLink(e.target.value)}
-            required
-          />
-        </div>
+          <div style={styles.formGroup}>
+            <label htmlFor="partyName" style={styles.label}>
+              Party Name:
+            </label>
+            <input
+              type="text"
+              id="partyName"
+              value={partyName}
+              onChange={(e) => setPartyName(e.target.value)}
+              required
+              style={styles.input}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="projectExplanation">Project Explanation:</label>
-          <textarea
-            id="projectExplanation"
-            value={projectExplanation}
-            onChange={(e) => setProjectExplanation(e.target.value)}
-            required
-          ></textarea>
-        </div>
+          <div style={styles.formGroup}>
+            <label htmlFor="age" style={styles.label}>
+              Age:
+            </label>
+            <input
+              type="number"
+              id="age"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              required
+              min="18"
+              style={styles.input}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="youtubeLink">YouTube Link (Project Demo):</label>
-          <input
-            type="url"
-            id="youtubeLink"
-            value={youtubeLink}
-            onChange={(e) => setYoutubeLink(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <button type="submit">Submit Project</button>
-        </div>
-      </form>
+          <button type="submit" style={styles.button}>
+            Register Candidate
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

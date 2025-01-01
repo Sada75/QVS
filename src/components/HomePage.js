@@ -30,7 +30,7 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
-      <h1>Welcome to the Project Upload Platform</h1>
+      <h1>Welcome to online Decentralized voting portal</h1>
       
       {!walletConnected ? (
         <button className="connect-wallet-btn" onClick={handleConnect}>
@@ -46,7 +46,7 @@ const HomePage = () => {
                 Voter
               </button>
               <button className="option-btn" onClick={handleUploadProjectClick}>
-                Upload Project
+                Add Candidate
               </button>
             </div>
           )}

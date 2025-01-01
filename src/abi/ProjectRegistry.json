@@ -5,145 +5,40 @@
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "user",
+				"name": "owner",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "candidateName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "partyName",
+				"type": "string"
 			},
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "newCreditCount",
+				"name": "age",
 				"type": "uint256"
 			}
 		],
-		"name": "CreditsUpdated",
+		"name": "CandidateRegistered",
 		"type": "event"
 	},
 	{
-		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "projectName",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "githubLink",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "youtubeLink",
-				"type": "string"
-			}
-		],
-		"name": "ProjectRegistered",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "getAllProjects",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "projectName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "githubLink",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "youtubeLink",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "credits",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct ProjectRegistry.Project[]",
+				"internalType": "uint256",
 				"name": "",
-				"type": "tuple[]"
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "users",
-				"type": "address[]"
-			}
-		],
-		"name": "getProjects",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "projectName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "githubLink",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "youtubeLink",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "credits",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct ProjectRegistry.Project[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "projects",
+		"name": "candidates",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -152,23 +47,63 @@
 			},
 			{
 				"internalType": "string",
-				"name": "projectName",
+				"name": "candidateName",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "githubLink",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "youtubeLink",
+				"name": "partyName",
 				"type": "string"
 			},
 			{
 				"internalType": "uint256",
-				"name": "credits",
+				"name": "age",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "votes",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllCandidates",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "candidateName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "partyName",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "age",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "votes",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct ElectionRegistry.Candidate[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -177,61 +112,95 @@
 	{
 		"inputs": [
 			{
-				"internalType": "string",
-				"name": "_projectName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_githubLink",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_youtubeLink",
-				"type": "string"
-			}
-		],
-		"name": "registerProject",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			},
-			{
 				"internalType": "uint256",
-				"name": "_credits",
+				"name": "candidateIndex",
 				"type": "uint256"
 			}
 		],
-		"name": "updateCredits",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "userAddresses",
+		"name": "getCandidateDetails",
 		"outputs": [
 			{
 				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "candidateName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "partyName",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "age",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "votes",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
 		],
+		"name": "isRegistered",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_candidateName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_partyName",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_age",
+				"type": "uint256"
+			}
+		],
+		"name": "registerCandidate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "candidateIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "voteForCandidate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

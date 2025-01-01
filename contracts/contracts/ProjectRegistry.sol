@@ -1,82 +1,92 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
-contract ProjectRegistry {
-    // Struct to store project details
-    struct Project {
-        address owner; // Address of the project owner
-        string projectName;
-        string githubLink;
-        string youtubeLink;
-        uint credits;
+contract ElectionRegistry {
+    // Struct to store candidate details
+    struct Candidate {
+        address owner; // Address of the candidate's representative or self
+        string candidateName;
+        string partyName;
+        uint age;
+        uint votes; // Number of votes received
     }
 
-    // Mapping to associate a user address with their project
-    mapping(address => Project) public projects;
+    // Array to store all candidates
+    Candidate[] public candidates;
 
-    // Array to store all user addresses
-    address[] public userAddresses;
+    // Mapping to check if an address is already registered
+    mapping(address => bool) public isRegistered;
 
-    // Event to notify when a project is registered
-    event ProjectRegistered(
-        address indexed user,
-        string projectName,
-        string githubLink,
-        string youtubeLink
+    // Event to notify when a candidate is registered
+    event CandidateRegistered(
+        address indexed owner,
+        string candidateName,
+        string partyName,
+        uint age
     );
 
-    // Event to notify when credits are updated for a project
-    event CreditsUpdated(address indexed user, uint newCreditCount);
-
-    // Function to register or update a project
-    function registerProject(
-        string calldata _projectName,
-        string calldata _githubLink,
-        string calldata _youtubeLink
+    // Function to register a candidate
+    function registerCandidate(
+        string calldata _candidateName,
+        string calldata _partyName,
+        uint _age
     ) external {
-        require(bytes(_projectName).length > 0, "Project name is required");
-        require(bytes(_githubLink).length > 0, "GitHub link is required");
-        require(bytes(_youtubeLink).length > 0, "YouTube link is required");
+        require(!isRegistered[msg.sender], "Candidate already registered");
+        require(bytes(_candidateName).length > 0, "Candidate name is required");
+        require(bytes(_partyName).length > 0, "Party name is required");
+        require(_age > 18, "Candidate must be at least 18 years old");
 
-        if (bytes(projects[msg.sender].projectName).length == 0) {
-            userAddresses.push(msg.sender);
-        }
+        // Add the candidate to the array
+        candidates.push(
+            Candidate({
+                owner: msg.sender,
+                candidateName: _candidateName,
+                partyName: _partyName,
+                age: _age,
+                votes: 0
+            })
+        );
 
-        projects[msg.sender] = Project({
-            owner: msg.sender,
-            projectName: _projectName,
-            githubLink: _githubLink,
-            youtubeLink: _youtubeLink,
-            credits: 0
-        });
+        // Mark the address as registered
+        isRegistered[msg.sender] = true;
 
-        emit ProjectRegistered(msg.sender, _projectName, _githubLink, _youtubeLink);
+        emit CandidateRegistered(msg.sender, _candidateName, _partyName, _age);
     }
 
-    // Function to update credits for a project
-    function updateCredits(address _user, uint _credits) external {
-        require(bytes(projects[_user].projectName).length > 0, "No project found for the user");
-        projects[_user].credits = _credits;
-        emit CreditsUpdated(_user, _credits);
+    // Function to fetch all candidate details
+    function getAllCandidates() external view returns (Candidate[] memory) {
+        return candidates;
     }
 
-    // Function to fetch projects for given user addresses
-    function getProjects(address[] calldata users) external view returns (Project[] memory) {
-        uint length = users.length;
-        Project[] memory result = new Project[](length);
-        for (uint index = 0; index < length; index++) {
-            result[index] = projects[users[index]];
-        }
-        return result;
+    // Function to cast a vote to a candidate by index
+    function voteForCandidate(uint candidateIndex) external {
+        require(candidateIndex < candidates.length, "Invalid candidate index");
+
+        // Increment the vote count for the selected candidate
+        candidates[candidateIndex].votes += 1;
     }
 
-    // Function to fetch all projects
-    function getAllProjects() external view returns (Project[] memory) {
-        uint length = userAddresses.length;
-        Project[] memory result = new Project[](length);
-        for (uint index = 0; index < length; index++) {
-            result[index] = projects[userAddresses[index]];
-        }
-        return result;
+    // Function to fetch details of a specific candidate by index
+    function getCandidateDetails(uint candidateIndex) 
+        external 
+        view 
+        returns (
+            address owner,
+            string memory candidateName,
+            string memory partyName,
+            uint age,
+            uint votes
+        ) 
+    {
+        require(candidateIndex < candidates.length, "Invalid candidate index");
+
+        Candidate memory candidate = candidates[candidateIndex];
+        return (
+            candidate.owner,
+            candidate.candidateName,
+            candidate.partyName,
+            candidate.age,
+            candidate.votes
+        );
     }
 }
