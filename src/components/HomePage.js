@@ -28,6 +28,10 @@ const HomePage = () => {
     navigate("/UploadProjectPage"); // Navigate to the Upload Project page
   };
 
+  const handleResultsClick = () => {
+    navigate("/ResultsPage"); // Navigate to the Results page
+  };
+
   return (
     <div className="home-page">
       <h1>Welcome to the Project Upload Platform</h1>
@@ -47,6 +51,9 @@ const HomePage = () => {
               </button>
               <button className="option-btn" onClick={handleUploadProjectClick}>
                 Upload Project
+              </button>
+              <button className="option-btn" onClick={handleResultsClick}>
+                Results
               </button>
             </div>
           )}

@@ -6,6 +6,8 @@ import HomePage from './components/HomePage';
 import VoterPage from './components/VoterPage';
 import UploadProjectPage from './components/UploadProjectPage';
 import QuadraticVotingPage from './components/QuadraticVotingPage'; // Import the QuadraticVotingPage
+import ResultsPage from './components/ResultsPage';
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
           {/* Other pages */}
           <Route path="/VoterPage" element={<VoterPage />} />
           <Route path="/UploadProjectPage" element={<UploadProjectPage />} />
+          <Route path="/ResultsPage" element={<ResultsPage />}  />
         </Routes>
       </div>
     </Router>

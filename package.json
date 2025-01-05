@@ -4,6 +4,10 @@
   "private": true,
   "dependencies": {
     "cra-template": "1.2.0",
+    "dotenv": "^16.4.7",
+    "groq-sdk": "^0.9.1",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.2",
@@ -36,6 +40,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/dotenv": "^8.2.3",
     "ethers": "^6.13.4",
     "hardhat": "^2.22.17"
   }
