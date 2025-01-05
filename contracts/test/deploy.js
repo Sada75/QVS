@@ -1,5 +1,5 @@
 const main = async() => {
-    const ProjectRegistry = await hre.ethers.getContractFactory("ProjectRegistry");
+    const ProjectRegistry = await hre.ethers.getContractFactory("ElectionRegistry");
     const projectRegistry = await ProjectRegistry.deploy();
 
     // await projectRegistry.deployed();

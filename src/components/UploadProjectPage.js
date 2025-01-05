@@ -47,16 +47,6 @@ const UploadProjectPage = () => {
   };
 
   return (
-    <div
-      className="flex flex-col items-center justify-center h-screen px-72"
-      style={{
-        position: "relative",
-        width : "100%",
-        height : "100vh",
-        overflow: "hidden",
-      }}
-    >
-      <video src="./BV1.mp4" autoPlay loop muted style={{position : "absolute", width : "100%", height : "100vh" , objectFit : "cover", zIndex : -1}}></video>
     <div className="upload-project-page">
       <h2>Upload Your Project</h2>
       <form onSubmit={handleSubmit}>
@@ -106,7 +96,6 @@ const UploadProjectPage = () => {
           <button type="submit">Submit Project</button>
         </div>
       </form>
-    </div>
     </div>
   );
 };

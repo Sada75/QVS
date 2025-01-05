@@ -27,7 +27,6 @@ const HomePage = () => {
   const handleUploadProjectClick = () => {
     navigate("/UploadProjectPage"); // Navigate to the Upload Project page
   };
-
   const handleResultsClick = () => {
     navigate("/ResultsPage"); // Navigate to the Results page
   };

@@ -32,7 +32,7 @@ const QuadraticVotingPage = () => {
           marginBottom: '20px',
         }}
       >
-        What is Quadratic Voting?
+        What is Decentralized Voting on a Blockchain Network?
       </h1>
       <p 
         style={{
@@ -40,8 +40,8 @@ const QuadraticVotingPage = () => {
           marginBottom: '20px',
         }}
       >
-        Quadratic Voting (QV) is a voting system that allows individuals to allocate votes based on the strength of their preferences. 
-        It is designed to reflect the intensity of voters' feelings, not just the number of people who support a particular option.
+       A voting system on a blockchain network is a decentralized platform that uses blockchain technology to ensure secure, transparent, and tamper-proof voting. 
+       It provides an innovative solution to many challenges associated with traditional voting systems, such as fraud, lack of transparency, and inefficiency.
       </p>
       
       <h2 
@@ -59,12 +59,15 @@ const QuadraticVotingPage = () => {
           marginBottom: '20px',
         }}
       >
-        In Quadratic Voting, each voter is given a certain number of credits or "votes." 
-        The more votes you want to cast on a single issue, the more costly it becomes. 
-        The cost is determined by the square of the number of votes you wish to cast.
+
+A blockchain-based voting system offers a secure, transparent, and tamper-proof way to conduct elections. 
+When a voter casts their ballot, it is encrypted and digitally signed using their private key, ensuring the vote's authenticity and protecting their identity. 
+This encrypted vote is then recorded on the blockchain, where it becomes an immutable part of a decentralized ledger, safeguarded by cryptographic algorithms. 
+This prevents any unauthorized changes or tampering with the recorded data.
+       
       </p>
       
-      <h3 
+      {/* <h3 
         style={{
           fontSize: '1.5rem',
           color: '#2980b9',
@@ -72,16 +75,15 @@ const QuadraticVotingPage = () => {
         }}
       >
         Example:
-      </h3>
+      </h3> */}
       <p 
         style={{
           fontSize: '1.1rem',
           marginBottom: '20px',
         }}
       >
-        If you want to cast 1 vote, it costs you 1 credit. 
-        If you want to cast 2 votes, it will cost you 4 credits (2²). 
-        3 votes will cost 9 credits (3²), and so on.
+        This innovative approach combines robust security, anonymity, and real-time auditability, making it a revolutionary alternative to traditional voting systems. 
+        By leveraging blockchain technology, elections can be conducted more efficiently, with enhanced voter confidence and reduced operational costs.
       </p>
       
       <p 
@@ -90,7 +92,9 @@ const QuadraticVotingPage = () => {
           marginBottom: '30px',
         }}
       >
-        This method helps to prevent individuals or groups from overwhelming the voting system with many votes, ensuring that each vote is a more thoughtful and meaningful expression of preference.
+         The decentralized nature of blockchain ensures that no single entity controls the voting process, making it resilient to manipulation or fraud.
+         Each vote is independently verified by the network's nodes, ensuring that only eligible voters participate and that no duplicate votes are recorded. 
+         Voters can even verify that their vote has been counted by checking the transaction ID on the blockchain, maintaining trust and transparency in the process.
       </p>
 
       <button 
