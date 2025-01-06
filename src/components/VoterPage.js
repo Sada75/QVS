@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import fetchGitHubData from "../utils/githubAPI"; // Updated to fetch GitHub data including avatar_url
 import ProjectRegistryABI from "../abi/ProjectRegistry.json"; // Replace with the correct path to your ABI file
+import ReactMarkdown from 'react-markdown';
 
 const VoterPage = () => {
   const [projects, setProjects] = useState([]); // Store project list
@@ -240,9 +241,13 @@ const VoterPage = () => {
 
           {/* Display the README content */}
           <div style={styles.readme}>
-            <h3>README Content:</h3>
-            <pre>{projectDetails[project.name]?.readmeContent || "README not available."}</pre>
-          </div>
+          <h3>README Content:</h3>
+          {projectDetails[project.name]?.readmeContent ? (
+            <ReactMarkdown>{projectDetails[project.name]?.readmeContent}</ReactMarkdown>
+          ) : (
+            <p>README not available.</p>
+          )}
+        </div>
 
           {/* Input for number of votes for each project */}
           <input
